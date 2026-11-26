@@ -52,3 +52,9 @@ details .hint { margin: 10px 0 14px; }
 .income-line .income-box { flex: 0 1 220px; padding: 4px 12px; }
 .income-line .income-box input { font-size: 20px; text-align: right; }
 .fixed { margin-left: 6px; font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+.fc-main { display: flex; flex-direction: column; gap: 2px; background: var(--savings-soft); border-radius: 16px; padding: 14px 18px; }
+.fc-main.over { background: var(--pink-soft, #FDECF1); }
+.fc-main.over .fc-amt { color: var(--berry); }
+.fc-amt { font-family: var(--font-display); font-weight: 700; font-size: 30px; color: var(--savings); }
+.hint.warn { color: var(--fg); background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; }
+#forecast { display: flex; flex-direction: column; gap: 10px; }

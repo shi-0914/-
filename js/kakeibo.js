@@ -129,6 +129,8 @@ function render() {
     <div class="tile var"><span class="t-label">出費の合計</span><span class="t-amt num">${yen(total)}円</span><span class="t-pct">クレカ代 ${yen(sumSep)}円 ＋ その他 ${yen(sumMain)}円</span></div>
     <div class="tile sav ${income && balance < 0 ? "over" : ""}"><span class="t-label">収入 − 出費</span><span class="t-amt num">${income ? yen(balance) + "円" : "—"}</span><span class="t-pct">${income ? (balance >= 0 ? "手元に残る額" : "収入を超えています") : "収入を入れると表示"}</span></div>`;
 
+  renderForecast(used);
+
   const row = (r) => {
     const bu = budgets[r.key], u = used[r.key];
     const over = bu && u > bu;
@@ -151,3 +153,31 @@ function render() {
   }).join("") : `<tr><td colspan="4" class="empty">まだ記録がありません</td></tr>`;
 }
 render();
+
+// ===== 貯金の見込み =====
+// 見込みの出費 = 費目ごとに次の額を合計する
+//   ・予算がある費目：予算と「使った額」の大きい方
+//   ・予算がない費目：この月の記録があればその額、なければ直近3か月の平均（記録のある月だけ）
+//   ・どちらも無ければ 0円（下に「0円で計算」と表示）
+function renderForecast(used) {
+  const prevMonths = [...new Set(entries.map(x => x.date.slice(0, 7)).filter(m => m < month))].sort().slice(-3);
+  const planned = {}, missing = [];
+  ITEMS.forEach(i => {
+    if (budgets[i.key]) { planned[i.key] = Math.max(budgets[i.key], used[i.key]); return; }
+    if (used[i.key] > 0) { planned[i.key] = used[i.key]; return; }
+    const vals = prevMonths.map(m => entries.filter(x => x.key === i.key && x.date.startsWith(m)).reduce((s, x) => s + x.amt, 0)).filter(v => v > 0);
+    if (vals.length) planned[i.key] = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+    else { planned[i.key] = 0; missing.push(i.name); }
+  });
+  const spend = Object.values(planned).reduce((a, b) => a + b, 0);
+  if (!income) { $("forecast").innerHTML = `<p class="hint">上の「月の収入（手取り）」を入れると、貯金できる見込みを計算します。</p>`; return; }
+  const save = income - spend;
+  $("forecast").innerHTML = `
+    <div class="fc-main ${save < 0 ? "over" : ""}">
+      <span class="t-label">${save >= 0 ? "今月の貯金の見込み" : "今月は赤字の見込み"}</span>
+      <span class="fc-amt num">${save >= 0 ? "" : "−"}${yen(Math.abs(save))}円</span>
+      <span class="t-pct">年間にすると ${save >= 0 ? "" : "−"}${yen(Math.abs(save) * 12)}円（この月が12回続いた場合）</span>
+    </div>
+    <p class="hint">収入 ${yen(income)}円 − 見込みの出費 ${yen(spend)}円。予算のある費目は「予算と使った額の大きい方」、予算のない費目は「この月の記録、なければ直近3か月の平均」で計算しています。</p>
+    ${missing.length ? `<p class="hint warn">記録も過去の平均も無いため 0円で計算している費目：${missing.map(esc).join("、")}。記録するほど、見込みが実際に近づきます。</p>` : ""}`;
+}
