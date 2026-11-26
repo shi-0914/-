@@ -19,6 +19,7 @@ const KAKEIBO_ITEMS = [
   { key: "visa",    name: "クレカ代（VISA）", separate: true },
   { key: "coop",    name: "コープ配達" },
   { key: "coopins", name: "コープ保険", monthly: 4000 },
+  { key: "hipo",    name: "ひぽに仕送り", monthly: 50000 },
 ];
 // separate: true の費目は、一覧では別枠に分けて小計を出しますが、出費の合計には含めます（収入から引きます）。
 // グラフ・ドットの色（費目の順に使い、足りなければ繰り返します）
