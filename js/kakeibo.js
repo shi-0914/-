@@ -26,12 +26,16 @@ $("income").addEventListener("input", (e) => {
 
 // ===== 予算 =====
 let budgets = {};
-try {
-  const b = JSON.parse(localStorage.getItem(BUDGET_KEY) || "{}");
-  if (b && typeof b === "object") ITEMS.forEach(i => { if (Number.isInteger(b[i.key]) && b[i.key] > 0) budgets[i.key] = b[i.key]; });
-} catch (e) {}
+let saved = null;
+try { saved = JSON.parse(localStorage.getItem(BUDGET_KEY) || "null"); } catch (e) {}
+if (saved && typeof saved === "object") {
+  ITEMS.forEach(i => { if (Number.isInteger(saved[i.key]) && saved[i.key] > 0) budgets[i.key] = saved[i.key]; });
+} else {
+  ITEMS.forEach(i => { if (i.budget) budgets[i.key] = i.budget; });   // まだ保存がなければ初期値
+}
+ITEMS.forEach(i => { if (i.monthly) budgets[i.key] = i.monthly; });   // 毎月固定の費目は常に同額
 function persistBudget() { try { localStorage.setItem(BUDGET_KEY, JSON.stringify(budgets)); } catch (e) {} }
-$("budget-grid").innerHTML = ITEMS.map(i =>
+$("budget-grid").innerHTML = ITEMS.filter(i => !i.monthly).map(i =>
   `<label>${esc(i.name)}<input type="text" inputmode="numeric" autocomplete="off" data-k="${i.key}" placeholder="未設定" value="${budgets[i.key] ? yen(budgets[i.key]) : ""}"></label>`).join("");
 $("budget-grid").addEventListener("input", (e) => {
   const k = e.target.dataset.k; if (!k) return;
@@ -65,7 +69,7 @@ $("prev").addEventListener("click", () => shiftMonth(-1));
 $("next").addEventListener("click", () => shiftMonth(1));
 
 // ===== フォーム =====
-$("f-key").innerHTML = ITEMS.map(i => `<option value="${i.key}">${esc(i.name)}</option>`).join("");
+$("f-key").innerHTML = ITEMS.filter(i => !i.monthly).map(i => `<option value="${i.key}">${esc(i.name)}</option>`).join("");
 $("f-date").value = todayStr;
 $("f-amt").addEventListener("input", (e) => {
   const d = digits(e.target.value);
@@ -112,6 +116,7 @@ function render() {
   const used = {};
   ITEMS.forEach(i => used[i.key] = 0);
   cur.forEach(x => used[x.key] += x.amt);
+  ITEMS.forEach(i => { if (i.monthly) used[i.key] += i.monthly; });   // 毎月固定分
 
   const main = ITEMS.filter(i => !i.separate), sep = ITEMS.filter(i => i.separate);
   const sumMain = main.reduce((s, i) => s + used[i.key], 0);
@@ -129,7 +134,7 @@ function render() {
     const over = bu && u > bu;
     const w = bu ? Math.min(100, u / bu * 100) : 0;
     return `<div class="item-row ${over ? "over" : ""}">
-      <div class="item-top"><span><span class="dot" style="background:${r.color}"></span>${esc(r.name)}</span>
+      <div class="item-top"><span><span class="dot" style="background:${r.color}"></span>${esc(r.name)}${r.monthly ? '<small class="fixed">毎月固定</small>' : ""}</span>
       <span class="amts"><b>${yen(u)}</b>${bu ? ` / ${yen(bu)}` : ""}円</span></div>
       ${bu ? `<div class="bar" role="img" aria-label="${esc(r.name)} ${Math.round(w)}%"><i style="width:${w}%;--c:${r.color}"></i></div>` : ""}</div>`;
   };

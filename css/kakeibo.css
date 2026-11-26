@@ -51,3 +51,4 @@ details .hint { margin: 10px 0 14px; }
 .income-line label { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
 .income-line .income-box { flex: 0 1 220px; padding: 4px 12px; }
 .income-line .income-box input { font-size: 20px; text-align: right; }
+.fixed { margin-left: 6px; font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
