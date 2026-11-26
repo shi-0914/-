@@ -15,7 +15,7 @@
 <div class="wrap">
   <header class="site-head">
     <div class="brand"><span class="berry-i" aria-hidden="true"></span>家計簿ツール</div>
-    <a class="insta" href="index.html">予算を計算する</a>
+    <a class="insta" href="index.html">黄金比を計算する</a>
   </header>
 
   <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
@@ -26,7 +26,6 @@
       <h1 id="month-label"></h1>
       <button type="button" id="next" aria-label="次の月">›</button>
     </div>
-    <p class="hint" id="basis"></p>
     <div class="summary" id="summary"></div>
     <div id="items" class="items"></div>
   </section>
@@ -40,7 +39,14 @@
       <label>メモ<input type="text" id="f-memo" maxlength="40" placeholder="スーパー など（任意）"></label>
       <button class="btn btn-primary" type="submit">追加する</button>
     </form>
-    <p class="hint">貯蓄（預貯金・投資）に回した分も、費目「預貯金・投資」で記録します。</p>
+  </section>
+
+  <section class="card" aria-label="費目ごとの月の予算">
+    <details>
+      <summary><h2>費目ごとの月の予算を決める</h2></summary>
+      <p class="hint">金額を入れた費目だけ、使った額と比べて棒グラフが出ます。空欄の費目は「使った額」だけ表示します。</p>
+      <div class="budget-grid" id="budget-grid"></div>
+    </details>
   </section>
 
   <section class="card" aria-label="記録の一覧">
@@ -60,8 +66,7 @@
   <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
 </div>
 
-<script src="js/config.js"></script>
-<script src="js/calc.js"></script>
+<script src="js/kakeibo-config.js"></script>
 <script src="js/kakeibo.js"></script>
 </body>
 </html>

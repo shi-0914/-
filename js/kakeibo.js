@@ -1,21 +1,32 @@
-// 家計簿：黄金比で出した予算と、実際に使った額を比べる。
-// 予算の元になる手取り・家族構成は、index.html（計算ツール）で入力した値を引き継ぎます。
+// 家計簿：費目ごとに月の予算を決め、使った額を記録して比べる。
+// 費目は kakeibo-config.js、予算は画面の「月の予算を決める」で入力します（ブラウザに保存）。
 
-const STATE_KEY = "kakei-ougonhi-v2";   // app.js と同じキー
-const ENTRY_KEY = "kakeibo-v1";         // この家計簿の記録
+const ENTRY_KEY = "kakeibo-v1";          // 記録
+const BUDGET_KEY = "kakeibo-budget-v1";  // 費目ごとの月の予算 { key: 金額 }
+const ITEMS = KAKEIBO_ITEMS;
 
 const yen = (n) => n.toLocaleString("ja-JP");
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const $ = (id) => document.getElementById(id);
+const toHalf = (s) => s.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+const digits = (s) => toHalf(s).replace(/[^\d]/g, "").slice(0, 9);
 
-// ===== 予算の元データ =====
-let base = { income: 300000, fam: { adult: 2, pre: 0, elem: 2, mid: 0, high: 0, univ: 0 } };
+// ===== 予算 =====
+let budgets = {};
 try {
-  const s = JSON.parse(localStorage.getItem(STATE_KEY) || "null");
-  if (s && typeof s.income === "number" && s.fam && MEMBERS.every(m => Number.isInteger(s.fam[m.key]))) base = s;
+  const b = JSON.parse(localStorage.getItem(BUDGET_KEY) || "{}");
+  if (b && typeof b === "object") ITEMS.forEach(i => { if (Number.isInteger(b[i.key]) && b[i.key] > 0) budgets[i.key] = b[i.key]; });
 } catch (e) {}
-const budget = calc(base.income, base.fam);
-const budgetOf = (key) => budget.rows.find(r => r.key === key).amt;
+function persistBudget() { try { localStorage.setItem(BUDGET_KEY, JSON.stringify(budgets)); } catch (e) {} }
+$("budget-grid").innerHTML = ITEMS.map(i =>
+  `<label>${esc(i.name)}<input type="text" inputmode="numeric" autocomplete="off" data-k="${i.key}" placeholder="未設定" value="${budgets[i.key] ? yen(budgets[i.key]) : ""}"></label>`).join("");
+$("budget-grid").addEventListener("input", (e) => {
+  const k = e.target.dataset.k; if (!k) return;
+  const d = digits(e.target.value);
+  e.target.value = d ? yen(Number(d)) : "";
+  if (Number(d) > 0) budgets[k] = Number(d); else delete budgets[k];
+  persistBudget(); render();
+});
 
 // ===== 記録 =====
 let entries = [];
@@ -44,7 +55,7 @@ $("next").addEventListener("click", () => shiftMonth(1));
 $("f-key").innerHTML = ITEMS.map(i => `<option value="${i.key}">${esc(i.name)}</option>`).join("");
 $("f-date").value = todayStr;
 $("f-amt").addEventListener("input", (e) => {
-  const d = e.target.value.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[^\d]/g, "").slice(0, 9);
+  const d = digits(e.target.value);
   e.target.value = d ? yen(Number(d)) : "";
 });
 $("form").addEventListener("submit", (e) => {
@@ -83,39 +94,32 @@ $("csv").addEventListener("click", () => {
 function render() {
   const [y, m] = month.split("-");
   $("month-label").textContent = `${y}年${Number(m)}月`;
-  $("basis").textContent = `手取り ${yen(base.income)}円（${MEMBERS.filter(x => base.fam[x.key] > 0).map(x => `${x.name}${base.fam[x.key]}人`).join("・")}）の黄金比で計算`;
 
   const cur = entries.filter(x => x.date.startsWith(month));
   const used = {};
   ITEMS.forEach(i => used[i.key] = 0);
   cur.forEach(x => used[x.key] += x.amt);
 
-  const g = (grp) => budget.rows.filter(r => r.group === grp);
-  const sumBudget = ["fixed", "var"].reduce((s, k) => s + g(k).reduce((a, r) => a + r.amt, 0), 0);
-  const sumUsed = ["fixed", "var"].reduce((s, k) => s + g(k).reduce((a, r) => a + used[r.key], 0), 0);
-  const remain = sumBudget - sumUsed;
-  const saveB = budgetOf("save"), saveU = used.save;
+  const sumUsed = cur.reduce((s, x) => s + x.amt, 0);
+  const budgeted = ITEMS.filter(i => budgets[i.key]);
+  const sumBudget = budgeted.reduce((s, i) => s + budgets[i.key], 0);
+  const sumUsedB = budgeted.reduce((s, i) => s + used[i.key], 0);
+  const remain = sumBudget - sumUsedB;
 
   $("summary").innerHTML = `
-    <div class="tile"><span class="t-label">使える予算（固定費＋変動費）</span><span class="t-amt num">${yen(sumBudget)}円</span></div>
-    <div class="tile var ${remain < 0 ? "over" : ""}"><span class="t-label">使った額</span><span class="t-amt num">${yen(sumUsed)}円</span><span class="t-pct">${remain >= 0 ? `残り ${yen(remain)}円` : `${yen(-remain)}円オーバー`}</span></div>
-    <div class="tile sav"><span class="t-label">貯めた額</span><span class="t-amt num">${yen(saveU)}円</span><span class="t-pct">目標 ${yen(saveB)}円</span></div>`;
+    <div class="tile"><span class="t-label">予算の合計</span><span class="t-amt num">${yen(sumBudget)}円</span><span class="t-pct">${budgeted.length}費目に設定</span></div>
+    <div class="tile var"><span class="t-label">使った額（全費目）</span><span class="t-amt num">${yen(sumUsed)}円</span></div>
+    <div class="tile sav ${remain < 0 ? "over" : ""}"><span class="t-label">予算の残り</span><span class="t-amt num">${budgeted.length ? yen(remain) + "円" : "—"}</span><span class="t-pct">${budgeted.length ? (remain >= 0 ? "予算ありの費目の合計" : "オーバーしています") : "予算を決めると表示"}</span></div>`;
 
-  let html = "";
-  for (const grp of Object.keys(GROUPS)) {
-    html += `<div class="group-title">${GROUPS[grp]}</div>`;
-    for (const r of g(grp)) {
-      if (r.amt === 0 && used[r.key] === 0) continue;
-      const isSave = grp === "save";
-      const over = !isSave && used[r.key] > r.amt;
-      const w = r.amt > 0 ? Math.min(100, used[r.key] / r.amt * 100) : (used[r.key] > 0 ? 100 : 0);
-      html += `<div class="item-row ${over ? "over" : ""}">
-        <div class="item-top"><span><span class="dot" style="background:${r.color}"></span>${esc(r.name)}</span>
-        <span class="amts"><b>${yen(used[r.key])}</b> / ${yen(r.amt)}円</span></div>
-        <div class="bar" role="img" aria-label="${esc(r.name)} ${Math.round(w)}%"><i style="width:${w}%;--c:${r.color}"></i></div></div>`;
-    }
-  }
-  $("items").innerHTML = html;
+  $("items").innerHTML = ITEMS.map(r => {
+    const b = budgets[r.key], u = used[r.key];
+    const over = b && u > b;
+    const w = b ? Math.min(100, u / b * 100) : 0;
+    return `<div class="item-row ${over ? "over" : ""}">
+      <div class="item-top"><span><span class="dot" style="background:${r.color}"></span>${esc(r.name)}</span>
+      <span class="amts"><b>${yen(u)}</b>${b ? ` / ${yen(b)}` : ""}円</span></div>
+      ${b ? `<div class="bar" role="img" aria-label="${esc(r.name)} ${Math.round(w)}%"><i style="width:${w}%;--c:${r.color}"></i></div>` : ""}</div>`;
+  }).join("");
 
   const sorted = cur.slice().sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
   $("list").innerHTML = sorted.length ? sorted.map(x => {

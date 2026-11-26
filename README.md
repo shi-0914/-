@@ -28,7 +28,8 @@
 
 ## 家計簿ツール（kakeibo.html）
 
-黄金比で出した費目ごとの予算に、実際に使った金額を記録して比べるページです。
-- 予算の元になる手取り・家族構成は、`index.html` で入力した値（localStorage `kakei-ougonhi-v2`）を引き継ぎます。未入力なら「手取り30万円・大人2人・小学生2人」です。
-- 記録は localStorage（キー `kakeibo-v1`）に保存します。CSV で書き出せます。
-- 画面は `kakeibo.html` / `css/kakeibo.css` / `js/kakeibo.js`。費目と割合は `js/config.js` を共有しています。
+費目ごとに月の予算を自分で決め、使った金額を記録して比べるページです（黄金比の割合表とは連動しません）。
+- 費目：`js/kakeibo-config.js` の `KAKEIBO_ITEMS`（追加・名前変更・並べ替えはここ）。`key` は保存データに使うので、使い始めたら変えないでください。
+- 予算：画面の「費目ごとの月の予算を決める」で入力（localStorage `kakeibo-budget-v1`）。毎月同じ金額です。
+- 記録：localStorage `kakeibo-v1`。CSV で書き出せます。
+- 画面：`kakeibo.html` / `css/kakeibo.css` / `js/kakeibo.js`
