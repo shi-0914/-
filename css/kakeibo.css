@@ -45,3 +45,5 @@ details .hint { margin: 10px 0 14px; }
 .budget-grid input { font: inherit; font-size: 15px; color: var(--fg); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 6px 12px; width: 100%; min-width: 0; text-align: right; }
 .budget-grid input:focus { border-color: var(--accent); outline: none; }
 @media (max-width: 420px) { .budget-grid { grid-template-columns: minmax(0, 1fr); } }
+.group-title { display: flex; justify-content: space-between; gap: 8px; border-top: 2px dotted var(--line); padding-top: 14px; margin-top: 6px; }
+.group-title .num { color: var(--fg); }

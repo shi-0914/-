@@ -100,26 +100,30 @@ function render() {
   ITEMS.forEach(i => used[i.key] = 0);
   cur.forEach(x => used[x.key] += x.amt);
 
-  const sumUsed = cur.reduce((s, x) => s + x.amt, 0);
-  const budgeted = ITEMS.filter(i => budgets[i.key]);
+  const main = ITEMS.filter(i => !i.separate), sep = ITEMS.filter(i => i.separate);
+  const sumUsed = main.reduce((s, i) => s + used[i.key], 0);
+  const budgeted = main.filter(i => budgets[i.key]);
   const sumBudget = budgeted.reduce((s, i) => s + budgets[i.key], 0);
   const sumUsedB = budgeted.reduce((s, i) => s + used[i.key], 0);
   const remain = sumBudget - sumUsedB;
+  const sumSep = sep.reduce((s, i) => s + used[i.key], 0);
 
   $("summary").innerHTML = `
     <div class="tile"><span class="t-label">予算の合計</span><span class="t-amt num">${yen(sumBudget)}円</span><span class="t-pct">${budgeted.length}費目に設定</span></div>
-    <div class="tile var"><span class="t-label">使った額（全費目）</span><span class="t-amt num">${yen(sumUsed)}円</span></div>
+    <div class="tile var"><span class="t-label">使った額</span><span class="t-amt num">${yen(sumUsed)}円</span><span class="t-pct">クレカ代を除く</span></div>
     <div class="tile sav ${remain < 0 ? "over" : ""}"><span class="t-label">予算の残り</span><span class="t-amt num">${budgeted.length ? yen(remain) + "円" : "—"}</span><span class="t-pct">${budgeted.length ? (remain >= 0 ? "予算ありの費目の合計" : "オーバーしています") : "予算を決めると表示"}</span></div>`;
 
-  $("items").innerHTML = ITEMS.map(r => {
-    const b = budgets[r.key], u = used[r.key];
-    const over = b && u > b;
-    const w = b ? Math.min(100, u / b * 100) : 0;
+  const row = (r) => {
+    const bu = budgets[r.key], u = used[r.key];
+    const over = bu && u > bu;
+    const w = bu ? Math.min(100, u / bu * 100) : 0;
     return `<div class="item-row ${over ? "over" : ""}">
       <div class="item-top"><span><span class="dot" style="background:${r.color}"></span>${esc(r.name)}</span>
-      <span class="amts"><b>${yen(u)}</b>${b ? ` / ${yen(b)}` : ""}円</span></div>
-      ${b ? `<div class="bar" role="img" aria-label="${esc(r.name)} ${Math.round(w)}%"><i style="width:${w}%;--c:${r.color}"></i></div>` : ""}</div>`;
-  }).join("");
+      <span class="amts"><b>${yen(u)}</b>${bu ? ` / ${yen(bu)}` : ""}円</span></div>
+      ${bu ? `<div class="bar" role="img" aria-label="${esc(r.name)} ${Math.round(w)}%"><i style="width:${w}%;--c:${r.color}"></i></div>` : ""}</div>`;
+  };
+  $("items").innerHTML = main.map(row).join("") +
+    (sep.length ? `<div class="group-title"><span>クレカ代（上の合計には含めません）</span><span class="num">合計 ${yen(sumSep)}円</span></div>` + sep.map(row).join("") : "");
 
   const sorted = cur.slice().sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
   $("list").innerHTML = sorted.length ? sorted.map(x => {

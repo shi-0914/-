@@ -29,7 +29,7 @@
 ## 家計簿ツール（kakeibo.html）
 
 費目ごとに月の予算を自分で決め、使った金額を記録して比べるページです（黄金比の割合表とは連動しません）。
-- 費目：`js/kakeibo-config.js` の `KAKEIBO_ITEMS`（追加・名前変更・並べ替えはここ）。`key` は保存データに使うので、使い始めたら変えないでください。
+- 費目：`js/kakeibo-config.js` の `KAKEIBO_ITEMS`（追加・名前変更・並べ替えはここ）。`separate: true` の費目（クレカ代3つ）は上の合計に含めず、別枠で集計します。`key` は保存データに使うので、使い始めたら変えないでください。
 - 予算：画面の「費目ごとの月の予算を決める」で入力（localStorage `kakeibo-budget-v1`）。毎月同じ金額です。
 - 記録：localStorage `kakeibo-v1`。CSV で書き出せます。
 - 画面：`kakeibo.html` / `css/kakeibo.css` / `js/kakeibo.js`
