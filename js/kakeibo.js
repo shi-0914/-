@@ -2,6 +2,7 @@
 // 費目は kakeibo-config.js、予算は画面の「月の予算を決める」で入力します（ブラウザに保存）。
 
 const ENTRY_KEY = "kakeibo-v1";          // 記録
+const INCOME_KEY = "kakeibo-income-v1";  // 月の収入（毎月同じ金額）
 const BUDGET_KEY = "kakeibo-budget-v1";  // 費目ごとの月の予算 { key: 金額 }
 const ITEMS = KAKEIBO_ITEMS;
 
@@ -10,6 +11,18 @@ const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt
 const $ = (id) => document.getElementById(id);
 const toHalf = (s) => s.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
 const digits = (s) => toHalf(s).replace(/[^\d]/g, "").slice(0, 9);
+
+// ===== 収入 =====
+let income = 0;
+try { const v = JSON.parse(localStorage.getItem(INCOME_KEY) || "0"); if (Number.isInteger(v) && v > 0) income = v; } catch (e) {}
+$("income").value = income ? yen(income) : "";
+$("income").addEventListener("input", (e) => {
+  const d = digits(e.target.value);
+  income = Number(d) || 0;
+  e.target.value = d && income ? yen(income) : "";
+  try { localStorage.setItem(INCOME_KEY, JSON.stringify(income)); } catch (err) {}
+  render();
+});
 
 // ===== 予算 =====
 let budgets = {};
@@ -101,17 +114,15 @@ function render() {
   cur.forEach(x => used[x.key] += x.amt);
 
   const main = ITEMS.filter(i => !i.separate), sep = ITEMS.filter(i => i.separate);
-  const sumUsed = main.reduce((s, i) => s + used[i.key], 0);
-  const budgeted = main.filter(i => budgets[i.key]);
-  const sumBudget = budgeted.reduce((s, i) => s + budgets[i.key], 0);
-  const sumUsedB = budgeted.reduce((s, i) => s + used[i.key], 0);
-  const remain = sumBudget - sumUsedB;
+  const sumMain = main.reduce((s, i) => s + used[i.key], 0);
   const sumSep = sep.reduce((s, i) => s + used[i.key], 0);
+  const total = sumMain + sumSep;           // クレカ代も出費として収入から引く
+  const balance = income - total;
 
   $("summary").innerHTML = `
-    <div class="tile"><span class="t-label">予算の合計</span><span class="t-amt num">${yen(sumBudget)}円</span><span class="t-pct">${budgeted.length}費目に設定</span></div>
-    <div class="tile var"><span class="t-label">使った額</span><span class="t-amt num">${yen(sumUsed)}円</span><span class="t-pct">クレカ代を除く</span></div>
-    <div class="tile sav ${remain < 0 ? "over" : ""}"><span class="t-label">予算の残り</span><span class="t-amt num">${budgeted.length ? yen(remain) + "円" : "—"}</span><span class="t-pct">${budgeted.length ? (remain >= 0 ? "予算ありの費目の合計" : "オーバーしています") : "予算を決めると表示"}</span></div>`;
+    <div class="tile"><span class="t-label">収入</span><span class="t-amt num">${income ? yen(income) + "円" : "—"}</span><span class="t-pct">${income ? "毎月同じ金額で計算" : "上に入力してください"}</span></div>
+    <div class="tile var"><span class="t-label">出費の合計</span><span class="t-amt num">${yen(total)}円</span><span class="t-pct">クレカ代 ${yen(sumSep)}円 ＋ その他 ${yen(sumMain)}円</span></div>
+    <div class="tile sav ${income && balance < 0 ? "over" : ""}"><span class="t-label">収入 − 出費</span><span class="t-amt num">${income ? yen(balance) + "円" : "—"}</span><span class="t-pct">${income ? (balance >= 0 ? "手元に残る額" : "収入を超えています") : "収入を入れると表示"}</span></div>`;
 
   const row = (r) => {
     const bu = budgets[r.key], u = used[r.key];
@@ -123,7 +134,7 @@ function render() {
       ${bu ? `<div class="bar" role="img" aria-label="${esc(r.name)} ${Math.round(w)}%"><i style="width:${w}%;--c:${r.color}"></i></div>` : ""}</div>`;
   };
   $("items").innerHTML = main.map(row).join("") +
-    (sep.length ? `<div class="group-title"><span>クレカ代（上の合計には含めません）</span><span class="num">合計 ${yen(sumSep)}円</span></div>` + sep.map(row).join("") : "");
+    (sep.length ? `<div class="group-title"><span>クレカ代（出費の合計には含まれます）</span><span class="num">合計 ${yen(sumSep)}円</span></div>` + sep.map(row).join("") : "");
 
   const sorted = cur.slice().sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
   $("list").innerHTML = sorted.length ? sorted.map(x => {

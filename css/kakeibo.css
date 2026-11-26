@@ -47,3 +47,7 @@ details .hint { margin: 10px 0 14px; }
 @media (max-width: 420px) { .budget-grid { grid-template-columns: minmax(0, 1fr); } }
 .group-title { display: flex; justify-content: space-between; gap: 8px; border-top: 2px dotted var(--line); padding-top: 14px; margin-top: 6px; }
 .group-title .num { color: var(--fg); }
+.income-line { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: -8px; }
+.income-line label { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+.income-line .income-box { flex: 0 1 220px; padding: 4px 12px; }
+.income-line .income-box input { font-size: 20px; text-align: right; }

@@ -15,7 +15,7 @@ const KAKEIBO_ITEMS = [
   { key: "coop",    name: "コープ配達" },
   { key: "coopins", name: "コープ保険" },
 ];
-// separate: true の費目は、上の合計（使った額・予算の合計・残り）に含めず、別枠で集計します。
+// separate: true の費目は、一覧では別枠に分けて小計を出しますが、出費の合計には含めます（収入から引きます）。
 // グラフ・ドットの色（費目の順に使い、足りなければ繰り返します）
 const KAKEIBO_COLORS = ["#C2456E","#D8648A","#E585A3","#D9473F","#E46A55","#EC8C6E","#F2AE8C","#D2A673","#B98D66","#9C7A66","#6F9851","#C9A45C","#EEA5BB"];
 KAKEIBO_ITEMS.forEach((it, i) => it.color = KAKEIBO_COLORS[i % KAKEIBO_COLORS.length]);
