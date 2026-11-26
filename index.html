@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="月の手取り額と家族の人数を入れるだけで、固定費・変動費・貯蓄の理想の予算（家計の黄金比）を1,000円単位で自動計算します。">
+<meta property="og:title" content="家計の黄金比計算ツール">
+<meta property="og:description" content="手取りと家族の人数から、わが家の理想の予算がわかる無料ツール。">
+<meta property="og:type" content="website">
+<style>body{margin:0}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>家計の黄金比計算ツール</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site-head">
+    <div class="brand"><span class="berry-i" aria-hidden="true"></span>家計の黄金比計算ツール</div>
+    <a class="insta" href="https://www.instagram.com/mochiko_moneylife/" target="_blank" rel="noopener" aria-label="Instagram @mochiko_moneylife を見る">
+      <span class="avatar" aria-hidden="true"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      <span class="insta-text">Instagram</span>
+    </a>
+  </header>
+
+  <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
+
+  <section class="hero">
+    <div class="hero-text">
+      <span class="eyebrow"><span class="flower-i" aria-hidden="true"></span>手取りから予算をつくる</span>
+      <h1>手取りを入れるだけで、<br>わが家の<em>理想の予算</em>がわかる</h1>
+      <p>月の手取り額と、家族の人数を入力してください。こどもの年齢に合わせて割合を自動で調整し、固定費・変動費・貯蓄の目安を1,000円単位で計算します。</p>
+    </div>
+    <img class="hero-art" src="assets/hero-cat.png" alt="いちごのショートケーキにのった、王冠をかぶった黒猫" width="300" height="271">
+  </section>
+
+  <section class="card" aria-label="計算フォーム">
+    <div>
+      <label class="field-label" for="income"><span class="step">1</span>月の手取り額</label>
+      <div class="income-row">
+        <div class="income-box">
+          <input id="income" type="text" inputmode="numeric" autocomplete="off" value="300,000" aria-describedby="income-hint">
+          <span>円</span>
+        </div>
+        <div class="quick" aria-label="よく使う金額">
+          <button type="button" data-v="200000">20万</button>
+          <button type="button" data-v="250000">25万</button>
+          <button type="button" data-v="300000">30万</button>
+          <button type="button" data-v="400000">40万</button>
+        </div>
+      </div>
+      <p class="hint" id="income-hint">働いている大人が複数いる場合は、手取りを合計して入力してください。児童手当などの手当は含めないのがおすすめです。（最初は例として「手取り30万円・大人2人・小学生2人」で表示しています）</p>
+    </div>
+
+    <div>
+      <span class="field-label"><span class="step">2</span>家族の人数</span>
+      <div class="counters" id="counters"></div>
+    </div>
+
+    <div class="result-head" aria-live="polite">
+      <div>
+        <h2 id="result-title">結果</h2>
+        <p id="result-sub"></p>
+      </div>
+      <img src="assets/result-cat.png" alt="" width="300" height="324" aria-hidden="true">
+    </div>
+
+    <div class="summary" id="summary"></div>
+
+    <div class="result-body">
+      <div>
+        <div class="donut-box">
+          <svg viewBox="0 0 200 200" id="donut" role="img" aria-label="費目ごとの割合の円グラフ"></svg>
+          <div class="donut-center"><small>手取り</small><strong class="num" id="donut-total"></strong></div>
+        </div>
+        <div class="tip">
+          <img src="assets/tip-cat.png" alt="" width="279" height="394" aria-hidden="true">
+          <p class="tip-bubble" id="tip"></p>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>費目</th><th class="r">割合</th><th class="r">月の予算</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <p class="foot-note" id="foot-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="shop" aria-label="家計簿のご案内">
+    <span class="avatar lg" role="img" aria-label="もちこ"></span>
+    <div class="shop-body">
+      <span class="shop-eyebrow"><span class="berry-i" aria-hidden="true"></span>わたしの家計簿 Tiara</span>
+      <h2>予算が決まったら、家計簿に書き込もう</h2>
+      <p>このツールで出した予算を、そのまま書き込んで使えるオリジナル家計簿をSTORESで販売しています。より深く家計のことが学べるLINEオープンチャットもあります。家計についてのご質問は、Instagramで受け付けています。</p>
+      <div class="shop-actions">
+        <a class="btn btn-primary" id="shop-link" href="https://mochikoshop.stores.jp/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>
+          家計簿を見てみる
+        </a>
+        <a class="btn btn-ghost" href="https://www.instagram.com/mochiko_moneylife/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          @mochiko_moneylife
+        </a>
+        <a class="btn btn-ghost" href="https://line.me/ti/g2/8MM3p46jqiED9INK4cgMFs2OKOEWw-chS-tBFA?utm_source=invitation&amp;utm_medium=link_copy&amp;utm_campaign=default" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 4c4.97 0 9 3.13 9 7s-4.03 7-9 7c-.7 0-1.38-.06-2.03-.18L6 20v-3.3C4.15 15.4 3 13.3 3 11c0-3.87 4.03-7 9-7z"/></svg>
+          LINEオープンチャットに参加
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="guide">
+    <div class="guide-head">
+      <div>
+        <h2><span class="berry-i" aria-hidden="true"></span>家計の黄金比とは？</h2>
+        <p>手取りに対して「どの費目にいくらまで使うか」の目安の割合です。この割合を予算にして、実際の支出と比べると、使いすぎている費目がひと目でわかります。</p>
+      </div>
+      <img src="assets/guide-cat.png" alt="" width="300" height="197" aria-hidden="true">
+    </div>
+    <div class="guide-grid">
+      <div class="guide-item"><h3><span class="swatch" style="background:var(--f2)"></span>固定費</h3><p>住居費・通信費・保険料・サブスクなど、毎月ほぼ同じ金額がかかるもの。一度見直すと効果が続きます。</p></div>
+      <div class="guide-item"><h3><span class="swatch" style="background:var(--v1)"></span>変動費</h3><p>食費・日用品・レジャーなど、月によって変わるもの。週ごとの予算にすると管理しやすくなります。</p></div>
+      <div class="guide-item"><h3><span class="swatch" style="background:var(--savings)"></span>貯蓄</h3><p>給料日に先に取り分ける「先取り貯金」がおすすめ。余ったら貯める方法では残りにくいです。</p></div>
+    </div>
+    <p class="disclaimer">※ 表示される金額は一般的な目安です。住んでいる地域、持ち家か賃貸か、こどもの進路などによって最適な割合は変わります。わが家に合わせて調整してください。</p>
+  </section>
+
+  <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
+
+  <footer class="site-foot">
+    <span>© 家計の黄金比計算ツール</span>
+    <a class="insta" href="https://www.instagram.com/mochiko_moneylife/" target="_blank" rel="noopener">
+      <span class="avatar" aria-hidden="true"></span>
+      Instagramで家計のコツを発信中
+    </a>
+  </footer>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
