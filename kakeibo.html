@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="黄金比で出した予算に、毎日の支出を書き込んで比べる家計簿ツール。">
+<title>家計簿ツール</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/kakeibo.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site-head">
+    <div class="brand"><span class="berry-i" aria-hidden="true"></span>家計簿ツール</div>
+    <a class="insta" href="index.html">予算を計算する</a>
+  </header>
+
+  <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
+
+  <section class="card" aria-label="月の予算と使った額">
+    <div class="month-nav">
+      <button type="button" id="prev" aria-label="前の月">‹</button>
+      <h1 id="month-label"></h1>
+      <button type="button" id="next" aria-label="次の月">›</button>
+    </div>
+    <p class="hint" id="basis"></p>
+    <div class="summary" id="summary"></div>
+    <div id="items" class="items"></div>
+  </section>
+
+  <section class="card" aria-label="支出を記録">
+    <h2>支出を記録する</h2>
+    <form id="form" class="entry-form">
+      <label>日付<input type="date" id="f-date" required></label>
+      <label>費目<select id="f-key"></select></label>
+      <label>金額（円）<input type="text" id="f-amt" inputmode="numeric" autocomplete="off" placeholder="1,200" required></label>
+      <label>メモ<input type="text" id="f-memo" maxlength="40" placeholder="スーパー など（任意）"></label>
+      <button class="btn btn-primary" type="submit">追加する</button>
+    </form>
+    <p class="hint">貯蓄（預貯金・投資）に回した分も、費目「預貯金・投資」で記録します。</p>
+  </section>
+
+  <section class="card" aria-label="記録の一覧">
+    <div class="list-head">
+      <h2>この月の記録</h2>
+      <button type="button" class="btn btn-ghost" id="csv">CSVで保存</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>日付</th><th>費目</th><th class="r">金額</th><th></th></tr></thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+    <p class="foot-note">記録はこのブラウザの中にだけ保存されます（サーバーには送りません）。ブラウザのデータを消すと記録も消えるので、CSVで保存しておくと安心です。</p>
+  </section>
+
+  <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/kakeibo.js"></script>
+</body>
+</html>

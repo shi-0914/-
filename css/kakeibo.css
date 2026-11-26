@@ -1,0 +1,37 @@
+.card h2 { font-size: 18px; }
+.month-nav { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.month-nav h1 { font-size: 22px; min-width: 7em; text-align: center; }
+.month-nav button {
+  width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--accent);
+  background: var(--paper); color: var(--accent); font-size: 22px; line-height: 1; cursor: pointer; padding: 0;
+}
+.month-nav button:hover { background: var(--accent); color: var(--accent-ink); }
+#basis { text-align: center; margin-top: -12px; }
+.tile.over .t-amt { color: var(--berry); }
+
+.items { display: flex; flex-direction: column; gap: 12px; }
+.group-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--muted); margin-top: 6px; }
+.item-row { display: grid; gap: 4px; }
+.item-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; }
+.item-top .amts { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.item-top .amts b { color: var(--fg); }
+.item-row.over .amts b { color: var(--berry); }
+.bar { height: 10px; border-radius: 999px; background: var(--accent-soft); overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: 999px; background: var(--c, var(--accent)); }
+.item-row.over .bar > i { background: var(--berry); }
+
+.entry-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.entry-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); min-width: 0; }
+.entry-form input, .entry-form select {
+  font: inherit; font-size: 15px; color: var(--fg); background: var(--bg);
+  border: 2px solid var(--line); border-radius: 12px; padding: 8px 12px; min-width: 0; width: 100%;
+}
+.entry-form input:focus, .entry-form select:focus { border-color: var(--accent); outline: none; }
+.entry-form .btn { justify-content: center; border: 0; cursor: pointer; font-family: inherit; grid-column: 1 / -1; }
+.list-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.list-head .btn { cursor: pointer; font-family: inherit; padding: 6px 14px; font-size: 13px; }
+.del { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; padding: 2px 8px; }
+.del:hover { color: var(--berry); }
+.memo { display: block; font-size: 11px; color: var(--muted); margin-left: 18px; line-height: 1.4; }
+.empty { text-align: center; color: var(--muted); padding: 18px 0; }
+@media (max-width: 420px) { .entry-form { grid-template-columns: minmax(0, 1fr); } }

@@ -25,3 +25,10 @@
 - 費目を足す・消すときは、`ITEMS` と、`ADULT_BASE` / `CHILD_ADD` の全行の両方に同じキーを追加・削除してください。
 - 保存済みの入力値はブラウザの localStorage（キー `kakei-ougonhi-v2`）に残ります。確認時に古い値が出るときは、ブラウザのサイトデータを消してください。
 - 元のページにあった Netlify が自動で付けた計測用の `<script>` とコメントは、ソースには含めていません。
+
+## 家計簿ツール（kakeibo.html）
+
+黄金比で出した費目ごとの予算に、実際に使った金額を記録して比べるページです。
+- 予算の元になる手取り・家族構成は、`index.html` で入力した値（localStorage `kakei-ougonhi-v2`）を引き継ぎます。未入力なら「手取り30万円・大人2人・小学生2人」です。
+- 記録は localStorage（キー `kakeibo-v1`）に保存します。CSV で書き出せます。
+- 画面は `kakeibo.html` / `css/kakeibo.css` / `js/kakeibo.js`。費目と割合は `js/config.js` を共有しています。
