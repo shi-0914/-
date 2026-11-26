@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/kakeibo.css">
+<link rel="stylesheet" href="css/chiikawa.css">
 </head>
 <body>
 <div class="wrap">
@@ -18,7 +19,8 @@
     <a class="insta" href="index.html">黄金比を計算する</a>
   </header>
 
-  <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
+  <!-- 好きな画像を assets/chiikawa/header.png に置くと、ここに表示されます（無ければ何も出ません） -->
+  <img class="deco" src="assets/chiikawa/header.png" alt="" onerror="this.remove()">
 
   <section class="card" aria-label="月の予算と使った額">
     <div class="month-nav">
@@ -67,7 +69,6 @@
     <p class="foot-note">記録はこのブラウザの中にだけ保存されます（サーバーには送りません）。ブラウザのデータを消すと記録も消えるので、CSVで保存しておくと安心です。</p>
   </section>
 
-  <img class="garland" src="assets/garland.png" alt="" width="640" height="72">
 </div>
 
 <script src="js/kakeibo-config.js"></script>

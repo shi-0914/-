@@ -34,3 +34,7 @@
 - 予算：画面の「費目ごとの月の予算を決める」で入力（localStorage `kakeibo-budget-v1`）。毎月同じ金額です。
 - 記録：localStorage `kakeibo-v1`。CSV で書き出せます。
 - 画面：`kakeibo.html` / `css/kakeibo.css` / `js/kakeibo.js`
+
+### 家計簿ページの見た目（css/chiikawa.css）
+- ちいかわ風のパステル配色と水玉の背景です（公式の色ではなく、私が選んだ色です）。色は `css/chiikawa.css` 先頭の変数で変えられます。
+- ちいかわのキャラクター画像は同梱していません（著作物のため）。使ってよい画像をお持ちなら `assets/chiikawa/header.png` として置くと、ページ上部に表示されます。

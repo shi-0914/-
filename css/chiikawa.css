@@ -1,0 +1,28 @@
+/* 家計簿ページ用：やさしいパステルの配色（ちいかわ風のイメージ。公式の色ではありません）
+   色を変えたいときは、ここの変数だけ書き換えれば全体が変わります。 */
+:root {
+  --bg: #FBF7F2;
+  --fg: #4A4650;
+  --muted: #8D8794;
+  --line: #E3E9F2;
+  --accent: #3F8FBF;       /* ボタン・見出しの青 */
+  --accent-soft: #E6F2FA;
+  --pink: #F6B8C8;
+  --pink-soft: #FDECF1;
+  --savings: #5E9A7A;
+  --savings-soft: #E9F4EE;
+}
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--pink-soft) 3px, transparent 3.5px),
+    radial-gradient(circle, var(--accent-soft) 3px, transparent 3.5px);
+  background-size: 44px 44px;
+  background-position: 0 0, 22px 22px;
+}
+.card, .shop { box-shadow: 0 10px 24px -20px rgba(63, 143, 191, .5); }
+.tile.var { background: var(--pink-soft); }
+.berry-i { background: none; width: auto; height: auto; }
+.berry-i::before { content: "♡"; color: var(--pink); font-size: 22px; line-height: 1; }
+.insta { border-radius: 999px; }
+.deco { display: block; max-width: 220px; max-height: 160px; width: auto; height: auto; margin: 0 auto; }

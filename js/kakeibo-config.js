@@ -17,5 +17,5 @@ const KAKEIBO_ITEMS = [
 ];
 // separate: true の費目は、一覧では別枠に分けて小計を出しますが、出費の合計には含めます（収入から引きます）。
 // グラフ・ドットの色（費目の順に使い、足りなければ繰り返します）
-const KAKEIBO_COLORS = ["#C2456E","#D8648A","#E585A3","#D9473F","#E46A55","#EC8C6E","#F2AE8C","#D2A673","#B98D66","#9C7A66","#6F9851","#C9A45C","#EEA5BB"];
+const KAKEIBO_COLORS = ["#E8799A","#F29BB3","#F6B8C8","#3F8FBF","#6FAED6","#9CC9E6","#E9B872","#F1CB8E","#8FBF9F","#5E9A7A","#B79BD3","#C9B3E0","#A8A2AE"];
 KAKEIBO_ITEMS.forEach((it, i) => it.color = KAKEIBO_COLORS[i % KAKEIBO_COLORS.length]);
